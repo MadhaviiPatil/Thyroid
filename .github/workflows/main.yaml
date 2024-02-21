@@ -5,7 +5,6 @@ on:
     branches:
       - main
 
-
 jobs:
   deploy:
     name: Deploy
@@ -34,25 +33,21 @@ jobs:
         ECR_REPOSITORY: thyroidprediction
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        # Build a docker container and
-        # push it to ECR so that it can
-        # be deployed to ECS.
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
     - name: Fill in the new image ID in the Amazon ECS task definition
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
-        task-definition: ${{ env.ECS_TASK_DEFINITION }}
-        container-name: ${{ env.CONTAINER_NAME }}
+        task-definition: <task_definition_arn>  # Replace <task_definition_arn> with the ARN of your ECS task definition
+        container-name: <container_name>  # Replace <container_name> with the name of your container
         image: ${{ steps.build-image.outputs.image }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
-        service: ${{ env.ECS_SERVICE }}
-        cluster: ${{ env.ECS_CLUSTER }}
+        service: <ecs_service_name>  # Replace <ecs_service_name> with the name of your ECS service
+        cluster: <ecs_cluster_name>  # Replace <ecs_cluster_name> with the name of your ECS cluster
         wait-for-service-stability: true
