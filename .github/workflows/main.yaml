@@ -40,7 +40,7 @@ jobs:
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
-        task-definition: ${{ env.ECS_TASK_DEFINITION }}
+        task-definition: <task_definition_arn>  # Replace <task_definition_arn> with the ARN of your ECS task definition
         container-name: <container_name>  # Replace <container_name> with the name of your container
         image: ${{ steps.build-image.outputs.image }}
 
@@ -48,4 +48,6 @@ jobs:
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
-        service: <ecs_service_
+        service: <ecs_service_name>  # Replace <ecs_service_name> with the name of your ECS service
+        cluster: <ecs_cluster_name>  # Replace <ecs_cluster_name> with the name of your ECS cluster
+        wait-for-service-stability: true
